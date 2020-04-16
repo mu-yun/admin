@@ -28,6 +28,8 @@ dependencies {
     //connect mysql
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'mysql:mysql-connector-java'
+    //jpa and hibernate conflict
+    compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     //flyway
     implementation 'org.flywaydb:flyway-core'
 
