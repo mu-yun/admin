@@ -1,9 +1,7 @@
 package com.muyun.springboot.common;
 
-import lombok.AccessLevel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -32,6 +30,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    public static final String WHERE_CLAUSE = "deleted = false";
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -54,9 +54,7 @@ public abstract class BaseEntity {
      * 逻辑删除(不显示该字段).
      * <p>使用基础类型，默认值为false
      */
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    @Column(updatable = false)
+    @JsonIgnore
     private boolean deleted;
 
 }
