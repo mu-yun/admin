@@ -15,6 +15,8 @@ public class Response<T> {
 
     private static final Response EMPTY_DATA_SUCCESS_RESPONSE = new Response<>(200, null, null);
 
+    private static final Response EMPTY_DATA_ERROR_RESPONSE = new Response<>(400, null, null);
+
     private final int code;
 
     private final String message;
@@ -22,10 +24,10 @@ public class Response<T> {
     private final T data;
 
     public static <T> Response<T> success(T data) {
-        if (data == null) {
-            return EMPTY_DATA_SUCCESS_RESPONSE;
-        }
-        Response response = new Response(200, null, data);
-        return response;
+        return data == null ? EMPTY_DATA_SUCCESS_RESPONSE : new Response(200, null, data);
+    }
+
+    public static <T> Response<T> error(T data) {
+        return data == null ? EMPTY_DATA_ERROR_RESPONSE : new Response(400, null, data);
     }
 }

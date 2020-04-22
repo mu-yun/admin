@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 /**
+ * 统一响应数据处理器
+ *
  * @author muyun
  * @date 2020/4/21
  */
 @RestControllerAdvice
-public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+public class GlobalResponseBodyHandler implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -24,7 +26,8 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
 
         //TODO 如果方法返回类型是String,应该特殊处理
-        if (returnType.getParameterType() == String.class) {
+        Class<?> parameterType = returnType.getParameterType();
+        if (parameterType == String.class || parameterType == Response.class) {
             return body;
         }
 

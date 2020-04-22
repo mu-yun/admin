@@ -1,5 +1,6 @@
 package com.muyun.springboot.controller;
 
+import com.muyun.springboot.dto.UserDTO;
 import com.muyun.springboot.entity.User;
 import com.muyun.springboot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * @author muyun
@@ -31,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User save(@RequestBody User user) {
+    public User save(@RequestBody @Valid UserDTO user) {
         return userService.save(user);
     }
 

@@ -1,8 +1,10 @@
 package com.muyun.springboot.service;
 
+import com.muyun.springboot.dto.UserDTO;
 import com.muyun.springboot.entity.User;
 import com.muyun.springboot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,7 +21,9 @@ public class UserService {
         return userRepository.getOne(id);
     }
 
-    public User save(User user) {
+    public User save(UserDTO userDto) {
+        User user = new User();
+        BeanUtils.copyProperties(userDto, user);
         return userRepository.save(user);
     }
 
