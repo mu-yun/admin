@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author muyun
  * @date 2020/4/14
@@ -24,8 +26,21 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
+    @PostConstruct
+    public void init() {
+        User user = get(1L);
+        if (user == null) {
+            user = new User();
+            user.setUsername("admin");
+            user.setPassword(passwordEncoder.encode("admin"));
+            user.setCreatedBy(1L);
+            user.setUpdatedBy(1L);
+            userRepository.save(user);
+        }
+    }
+
     public User get(Long id) {
-        return userRepository.getOne(id);
+        return userRepository.findById(id).orElse(null);
     }
 
     public User save(UserDTO userDto) {
@@ -51,10 +66,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if ("admin".equals(username)) {
-            return new UserDetail("admin", passwordEncoder.encode("admin"), null);
-        }
         User user = userRepository.findByUsername(username);
         return UserDetail.fromUser(user);
     }
+
 }

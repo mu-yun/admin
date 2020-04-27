@@ -2,6 +2,7 @@ package com.muyun.springboot.dto;
 
 import com.muyun.springboot.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,8 +14,11 @@ import java.util.Set;
  * @author muyun
  * @date 2020/4/27
  */
+@Data
 @AllArgsConstructor
 public class UserDetail implements UserDetails {
+
+    private final Long id;
 
     private final String username;
 
@@ -23,7 +27,7 @@ public class UserDetail implements UserDetails {
     private final Set<? extends GrantedAuthority> authorities;
 
     public static UserDetail fromUser(User user) {
-        return Objects.isNull(user) ? null : new UserDetail(user.getUsername(), user.getPassword(), null);
+        return Objects.isNull(user) ? null : new UserDetail(user.getId(), user.getUsername(), user.getPassword(), null);
     }
 
     @Override

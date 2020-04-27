@@ -33,11 +33,14 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().disable().authorizeRequests()
                 .antMatchers("/", "/ping")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
+                .and()
+                .formLogin()
+                .permitAll()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
