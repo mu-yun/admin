@@ -12,6 +12,8 @@ import javax.validation.constraints.Size;
 @Data
 public class UserDTO {
 
+    private Long id;
+
     @NotBlank(message = "用户账号不能为空")
     @Size(min = 6, max = 11, message = "账号长度必须为6-11个字符")
     private String username;
@@ -20,4 +22,6 @@ public class UserDTO {
     private String password;
 
     private String name;
+
+    private String phoneNumber;
 }
