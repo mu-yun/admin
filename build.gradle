@@ -35,6 +35,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    compile 'com.google.guava:guava:29.0-jre'
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

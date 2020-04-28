@@ -1,5 +1,6 @@
 package com.muyun.springboot.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.muyun.springboot.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class UserDetail implements UserDetails {
 
     private final String username;
 
+    @JsonIgnore
     private final String password;
 
     private final Set<? extends GrantedAuthority> authorities;
@@ -45,21 +47,25 @@ public class UserDetail implements UserDetails {
         return username;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
