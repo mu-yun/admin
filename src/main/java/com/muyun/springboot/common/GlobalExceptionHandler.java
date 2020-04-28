@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +28,17 @@ public class GlobalExceptionHandler {
         return Response.error(messages);
     }
 
-    @ExceptionHandler(Exception.class)
-    public Response<String> handleException(Exception e) {
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public Response<String> handleThrowable(NoHandlerFoundException e) {
+        log.error("", e);
         return Response.error(e.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public Response<String> handleException(Exception e) {
+        log.error("", e);
+        return Response.error(e.getMessage());
+    }
+
 }
