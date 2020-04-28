@@ -1,6 +1,7 @@
 package com.muyun.springboot.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +32,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public Response<String> handleThrowable(NoHandlerFoundException e) {
+        log.error("", e);
+        return Response.error(e.getMessage());
+    }
+
+    /**
+     * 处理访问controller方法无权限导致的异常
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public Response<String> handleException(AccessDeniedException e) {
         log.error("", e);
         return Response.error(e.getMessage());
     }
