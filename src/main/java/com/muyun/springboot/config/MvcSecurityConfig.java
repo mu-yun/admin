@@ -112,7 +112,7 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
     private <T> void setResponse(HttpServletResponse response, String responseBody) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().print(responseBody);
-        response.setStatus(200);
     }
 }
