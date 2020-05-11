@@ -19,6 +19,13 @@ spring:
   resources:
     add-mappings: false
 
+server:
+  servlet:
+    session:
+      cookie:
+        #客户端可以获取cookie
+        http-only: false
+
 
 logging:
   level:
