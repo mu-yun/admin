@@ -1,5 +1,6 @@
 package com.muyun.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.muyun.springboot.common.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,6 +22,7 @@ public class User extends BaseEntity {
     @Column(unique = true, nullable = false, updatable = false)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 

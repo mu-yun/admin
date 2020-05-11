@@ -26,10 +26,12 @@ public class UserDetail implements UserDetails {
     @JsonIgnore
     private final String password;
 
+    private final String name;
+
     private final Set<? extends GrantedAuthority> authorities;
 
     public static UserDetail fromUser(User user) {
-        return Objects.isNull(user) ? null : new UserDetail(user.getId(), user.getUsername(), user.getPassword(), null);
+        return Objects.isNull(user) ? null : new UserDetail(user.getId(), user.getUsername(), user.getPassword(), user.getName(), null);
     }
 
     @Override

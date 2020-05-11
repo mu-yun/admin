@@ -1,8 +1,10 @@
 package com.muyun.springboot.controller;
 
 import com.muyun.springboot.dto.UserDTO;
+import com.muyun.springboot.dto.UserDetail;
 import com.muyun.springboot.entity.User;
 import com.muyun.springboot.service.UserService;
+import com.muyun.springboot.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +29,11 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/detail")
+    public UserDetail getDetail() {
+        return UserUtil.getCurrentUserDetail();
+    }
 
     @GetMapping("/{id}")
     public User get(@PathVariable("id") User user) {

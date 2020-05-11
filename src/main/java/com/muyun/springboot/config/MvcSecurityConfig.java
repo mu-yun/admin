@@ -2,6 +2,8 @@ package com.muyun.springboot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muyun.springboot.common.Response;
+import com.muyun.springboot.dto.UserDetail;
+import com.muyun.springboot.util.UserUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -36,19 +39,17 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
-                .antMatchers("/", "/ping")
+                .antMatchers("/ping")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin()
                 .permitAll()
-                //登陆成功跳转到该请求获取用户信息
-                .successForwardUrl("/login")
+                .successHandler(authenticationSuccessHandler())
                 .failureHandler(authenticationFailureHandler())
                 .and()
                 .logout()
@@ -67,6 +68,17 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                UserDetail userDetail = UserUtil.getCurrentUserDetail();
+                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.success(userDetail)));
+            }
+        };
+
     }
 
     public AuthenticationFailureHandler authenticationFailureHandler() {
