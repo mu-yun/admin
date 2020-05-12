@@ -2,8 +2,6 @@ package com.muyun.springboot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muyun.springboot.common.Response;
-import com.muyun.springboot.dto.UserDetail;
-import com.muyun.springboot.util.UserUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -74,8 +72,8 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
         return new AuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                UserDetail userDetail = UserUtil.getCurrentUserDetail();
-                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.success(userDetail)));
+                String token = request.getSession().getId();
+                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.success(token)));
             }
         };
 
