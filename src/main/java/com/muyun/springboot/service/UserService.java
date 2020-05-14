@@ -1,6 +1,5 @@
 package com.muyun.springboot.service;
 
-import com.google.common.collect.Maps;
 import com.muyun.springboot.dto.UserDTO;
 import com.muyun.springboot.dto.UserDetail;
 import com.muyun.springboot.entity.User;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -24,9 +22,6 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-
-    //TODO 改用guava cache
-    private static final Map<String, UserDetail> USER_DETAIL_CACHE = Maps.newConcurrentMap();
 
     private static final Long ADMIN_ID = 1L;
 
@@ -74,21 +69,11 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetail userDetail = getUserDetailByUsername(username);
-        if (Objects.isNull(userDetail)) {
+        User user = userRepository.findByUsername(username);
+
+        if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("用户名不存在");
         }
-        USER_DETAIL_CACHE.put(username, userDetail);
-        return userDetail;
-    }
-
-    public UserDetail getUserDetailFromCacheByUsername(String username) {
-        UserDetail userDetail = USER_DETAIL_CACHE.remove(username);
-        return Objects.nonNull(userDetail) ? userDetail : getUserDetailByUsername(username);
-    }
-
-    public UserDetail getUserDetailByUsername(String username) {
-        User user = userRepository.findByUsername(username);
         return UserDetail.fromUser(user);
     }
 
