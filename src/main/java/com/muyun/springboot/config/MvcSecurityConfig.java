@@ -35,7 +35,11 @@ import java.io.IOException;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public MvcSecurityConfig(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -73,7 +77,7 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
                 String token = request.getSession().getId();
-                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.success(token)));
+                setResponse(response, objectMapper.writeValueAsString(Response.success(token)));
             }
         };
 
@@ -84,7 +88,7 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
             @Override
             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                                 AuthenticationException exception) throws IOException, ServletException {
-                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.error(exception.getMessage())));
+                setResponse(response, objectMapper.writeValueAsString(Response.error(exception.getMessage())));
             }
         };
 
@@ -92,9 +96,10 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new AuthenticationEntryPoint() {
+            @Override
             public void commence(HttpServletRequest request, HttpServletResponse response,
                                  AuthenticationException authException) throws IOException, ServletException {
-                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.error("请登陆")));
+                setResponse(response, objectMapper.writeValueAsString(Response.error("请登录")));
             }
         };
 
@@ -102,9 +107,10 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public AccessDeniedHandler accessDeniedHandler() {
         return new AccessDeniedHandler() {
+            @Override
             public void handle(HttpServletRequest request, HttpServletResponse response,
                                AccessDeniedException accessDeniedException) throws IOException, ServletException {
-                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.error("无权限")));
+                setResponse(response, objectMapper.writeValueAsString(Response.error("无权限")));
             }
         };
     }
@@ -114,7 +120,7 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
         return new LogoutSuccessHandler() {
             @Override
             public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                setResponse(response, OBJECT_MAPPER.writeValueAsString(Response.success(null)));
+                setResponse(response, objectMapper.writeValueAsString(Response.success(null)));
             }
         };
     }
