@@ -15,10 +15,12 @@ public class MenuDTO {
     private String name;
     private String icon;
     private String path;
+    private String componentName;
     private String componentPath;
     private String url;
     private HttpMethod httpMethod;
     private String authority;
-    private Menu.MenuType menuType;
+    private Menu.MenuType type;
+    private boolean hidden;
     private Long sequenceNumber;
 }

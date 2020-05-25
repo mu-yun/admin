@@ -9,6 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+
 
 /**
  * @author muyun
@@ -18,18 +21,33 @@ import javax.persistence.Entity;
 @Entity
 @DynamicUpdate
 @Where(clause = BaseEntity.WHERE_CLAUSE)
+@Table(indexes = @Index(columnList = "parentId"))
 public class Menu extends BaseEntity implements GrantedAuthority {
 
     private Long parentId;
-    private String name;
-    private String icon;
-    private String path;
-    private String componentPath;
-    private String url;
-    private HttpMethod httpMethod;
-    private String authority;
+
     @Column(nullable = false)
-    private MenuType menuType;
+    private String name;
+
+    private String icon;
+
+    private String path;
+
+    private String componentName;
+
+    private String componentPath;
+
+    private String url;
+
+    private HttpMethod httpMethod;
+
+    private String authority;
+
+    @Column(nullable = false)
+    private MenuType type;
+
+    private boolean hidden;
+
     private long sequenceNumber;
 
     @Override

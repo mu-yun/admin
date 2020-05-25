@@ -1,8 +1,8 @@
 package com.muyun.springboot.controller;
 
 import com.muyun.springboot.dto.MenuDTO;
-import com.muyun.springboot.entity.Menu;
 import com.muyun.springboot.service.MenuService;
+import com.muyun.springboot.vo.MenuVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,28 +28,23 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    @GetMapping("/{id}")
-    public Menu get(@PathVariable Long id) {
-        return menuService.get(id);
-    }
-
     @GetMapping
-    public List<Menu> list() {
+    public List<MenuVO> list() {
         return menuService.list(null);
     }
 
     @GetMapping("/{id}/menu")
-    public List<Menu> list(@PathVariable Long id) {
+    public List<MenuVO> list(@PathVariable Long id) {
         return menuService.list(id);
     }
 
     @PostMapping
-    public Menu save(@RequestBody MenuDTO menuDTO) {
+    public MenuVO save(@RequestBody MenuDTO menuDTO) {
         return menuService.save(menuDTO);
     }
 
     @PutMapping("/{id}")
-    public Menu update(@PathVariable Long id, @RequestBody MenuDTO menuDTO) {
+    public MenuVO update(@PathVariable Long id, @RequestBody MenuDTO menuDTO) {
         return menuService.update(id, menuDTO);
     }
 
