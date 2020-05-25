@@ -1,7 +1,7 @@
 package com.muyun.springboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.muyun.springboot.common.BaseEntity;
+import com.muyun.springboot.jpa.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;

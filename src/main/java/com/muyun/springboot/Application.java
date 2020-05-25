@@ -1,6 +1,7 @@
 package com.muyun.springboot;
 
-import com.muyun.springboot.common.BaseJpaRepository;
+import com.muyun.springboot.jpa.BaseJpaRepositoryFactoryBean;
+import com.muyun.springboot.jpa.BaseSimpleJpaRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -10,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @date 2020/03/14
  */
 @SpringBootApplication
-@EnableJpaRepositories(repositoryBaseClass = BaseJpaRepository.class)
+@EnableJpaRepositories(repositoryFactoryBeanClass = BaseJpaRepositoryFactoryBean.class, repositoryBaseClass = BaseSimpleJpaRepository.class)
 public class Application {
 
     public static void main(String[] args) {

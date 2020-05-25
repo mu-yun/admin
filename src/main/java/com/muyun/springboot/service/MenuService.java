@@ -71,8 +71,9 @@ public class MenuService {
     public void delete(Long id) {
         menuRepository.findById(id)
                 .map(menu -> {
-                    menuRepository.deleteById(id);
-//                    menuRepository.deleteAllByParentId(menu.getId());
+                    menuRepository.delete(menu);
+                    menuRepository.deleteAllByParentId(id);
+
                     invalidateCache(menu.getParentId());
                     invalidateCache(menu.getId());
                     return menu;

@@ -1,4 +1,4 @@
-package com.muyun.springboot.common;
+package com.muyun.springboot.jpa;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
