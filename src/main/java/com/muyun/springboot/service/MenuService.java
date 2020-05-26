@@ -5,10 +5,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.muyun.springboot.dto.MenuDTO;
 import com.muyun.springboot.entity.Menu;
+import com.muyun.springboot.mapper.MenuMapper;
 import com.muyun.springboot.repository.MenuRepository;
 import com.muyun.springboot.vo.MenuVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,20 +34,21 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
+    private final MenuMapper menuMapper;
+
     public List<MenuVO> list(Long parentId) {
         return menuRepository.findAllByParentId(parentId)
                 .stream()
-                .map(m -> MenuVO.of(m, MENU_HAS_CHILDREN_CACHE.getUnchecked(m.getId())))
+                .map(m -> menuMapper.toMenuVo(m, MENU_HAS_CHILDREN_CACHE.getUnchecked(m.getId())))
                 .collect(Collectors.toList());
     }
 
     public MenuVO save(MenuDTO menuDTO) {
-        Menu menu = new Menu();
-        BeanUtils.copyProperties(menuDTO, menu);
+        Menu menu = menuMapper.toMenu(menuDTO);
         menuRepository.save(menu);
 
-        invalidateCache(menu.getParentId());
-        return MenuVO.of(menu, false);
+        putCache(menu.getParentId());
+        return menuMapper.toMenuVo(menu, false);
     }
 
     @Transactional
@@ -55,14 +56,15 @@ public class MenuService {
         return menuRepository.findById(id)
                 .map(menu -> {
                     Long oldParentId = menu.getParentId();
-                    BeanUtils.copyProperties(menuDTO, menu);
+
+                    menuMapper.updateMenu(menu, menuDTO);
                     menuRepository.save(menu);
 
                     if (!Objects.equals(oldParentId, menu.getParentId())) {
                         invalidateCache(oldParentId);
-                        invalidateCache(menu.getParentId());
+                        putCache(menu.getParentId());
                     }
-                    return MenuVO.of(menu, MENU_HAS_CHILDREN_CACHE.getUnchecked(id));
+                    return menuMapper.toMenuVo(menu, MENU_HAS_CHILDREN_CACHE.getUnchecked(id));
                 })
                 .orElseThrow(() -> new RuntimeException("修改的菜单不存在"));
     }
@@ -86,4 +88,11 @@ public class MenuService {
             MENU_HAS_CHILDREN_CACHE.invalidate(id);
         }
     }
+
+    private void putCache(Long id) {
+        if (Objects.nonNull(id)) {
+            MENU_HAS_CHILDREN_CACHE.put(id, Boolean.TRUE);
+        }
+    }
+
 }
