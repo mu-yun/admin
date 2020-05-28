@@ -55,6 +55,7 @@ public abstract class BaseEntity {
      * <p>使用基础类型，默认值为false
      */
     @JsonIgnore
+    @Column(nullable = false)
     private Boolean deleted;
 
 }
