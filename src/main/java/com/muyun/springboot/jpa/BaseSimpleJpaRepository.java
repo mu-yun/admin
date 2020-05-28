@@ -39,6 +39,28 @@ public class BaseSimpleJpaRepository<T extends BaseEntity, ID extends Long> exte
         this(JpaEntityInformationSupport.getEntityInformation(domainClass, em), em);
     }
 
+
+    /**
+     * set deleted property to false when persist. because deleted is object type
+     *
+     * @param entity
+     * @param <S>
+     * @return
+     */
+    @Transactional
+    @Override
+    public <S extends T> S save(S entity) {
+
+        if (entityInformation.isNew(entity)) {
+            entity.setDeleted(Boolean.FALSE);
+            em.persist(entity);
+            return entity;
+        } else {
+            return em.merge(entity);
+        }
+
+    }
+
     /**
      * Soft Delete.
      * <p><code>deleteById</code>和<code>deleteAll</code>都调用该delete方法,所以重写该方法即可</p>

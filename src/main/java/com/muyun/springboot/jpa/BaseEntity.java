@@ -55,6 +55,6 @@ public abstract class BaseEntity {
      * <p>使用基础类型，默认值为false
      */
     @JsonIgnore
-    private boolean deleted;
+    private Boolean deleted;
 
 }
