@@ -2,6 +2,7 @@ package com.muyun.springboot.controller;
 
 import com.muyun.springboot.dto.MenuDTO;
 import com.muyun.springboot.service.MenuService;
+import com.muyun.springboot.vo.MenuTreeVO;
 import com.muyun.springboot.vo.MenuVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +29,13 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    @GetMapping
-    public List<MenuVO> list() {
-        return menuService.list(null);
+    @GetMapping(value = {"/tree", "/tree/{id}"})
+    public List<MenuTreeVO> listTree(@PathVariable(required = false) Long id) {
+        return menuService.listTree(id);
     }
 
-    @GetMapping("/{id}/menu")
-    public List<MenuVO> list(@PathVariable Long id) {
+    @GetMapping(value = {"", "/{id}"})
+    public List<MenuVO> list(@PathVariable(required = false) Long id) {
         return menuService.list(id);
     }
 

@@ -7,6 +7,7 @@ import com.muyun.springboot.dto.MenuDTO;
 import com.muyun.springboot.entity.Menu;
 import com.muyun.springboot.mapper.MenuMapper;
 import com.muyun.springboot.repository.MenuRepository;
+import com.muyun.springboot.vo.MenuTreeVO;
 import com.muyun.springboot.vo.MenuVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,10 +37,17 @@ public class MenuService {
 
     private final MenuMapper menuMapper;
 
+    public List<MenuTreeVO> listTree(Long parentId) {
+        return menuRepository.findByParentId(parentId)
+                .stream()
+                .map(m -> menuMapper.toMenuTreeVO(m, !MENU_HAS_CHILDREN_CACHE.getUnchecked(m.getId())))
+                .collect(Collectors.toList());
+    }
+
     public List<MenuVO> list(Long parentId) {
         return menuRepository.findAllByParentId(parentId)
                 .stream()
-                .map(m -> menuMapper.toMenuVo(m, MENU_HAS_CHILDREN_CACHE.getUnchecked(m.getId())))
+                .map(m -> menuMapper.toMenuVO(m, MENU_HAS_CHILDREN_CACHE.getUnchecked(m.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -48,7 +56,7 @@ public class MenuService {
         menuRepository.save(menu);
 
         putCache(menu.getParentId());
-        return menuMapper.toMenuVo(menu, false);
+        return menuMapper.toMenuVO(menu, false);
     }
 
     @Transactional
@@ -64,7 +72,7 @@ public class MenuService {
                         invalidateCache(oldParentId);
                         putCache(menu.getParentId());
                     }
-                    return menuMapper.toMenuVo(menu, MENU_HAS_CHILDREN_CACHE.getUnchecked(id));
+                    return menuMapper.toMenuVO(menu, MENU_HAS_CHILDREN_CACHE.getUnchecked(id));
                 })
                 .orElseThrow(() -> new RuntimeException("修改的菜单不存在"));
     }
