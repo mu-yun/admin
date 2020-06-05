@@ -15,7 +15,7 @@ import java.util.Set;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Query(value = "select menus_id from role_menus where roles_id=:id", nativeQuery = true)
-    Set<Long> getMenusId(Long id);
+    Set<Long> getRoleMenusId(Long id);
 
     @Query("select new com.muyun.springboot.vo.RoleVO(id,name) from Role")
     List<RoleVO> findAllRole();

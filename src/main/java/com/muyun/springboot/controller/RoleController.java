@@ -34,8 +34,8 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping("/{id}/menus")
-    public Set<Long> getMenus(@PathVariable Long id) {
-        return roleService.getMenus(id);
+    public Set<Long> getRoleMenus(@PathVariable Long id) {
+        return roleService.getRoleMenus(id);
     }
 
     @GetMapping("/all")

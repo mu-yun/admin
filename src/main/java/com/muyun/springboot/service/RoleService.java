@@ -38,8 +38,8 @@ public class RoleService {
         return roleRepository.findAll(example, pageable);
     }
 
-    public Set<Long> getMenus(Long id) {
-        return roleRepository.getMenusId(id);
+    public Set<Long> getRoleMenus(Long id) {
+        return roleRepository.getRoleMenusId(id);
     }
 
     public List<RoleVO> listAll() {
