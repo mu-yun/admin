@@ -4,6 +4,7 @@ import com.muyun.springboot.dto.RoleDTO;
 import com.muyun.springboot.entity.Role;
 import com.muyun.springboot.mapper.RoleMapper;
 import com.muyun.springboot.repository.RoleRepository;
+import com.muyun.springboot.vo.RoleVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,6 +40,10 @@ public class RoleService {
 
     public Set<Long> getMenus(Long id) {
         return roleRepository.getMenusId(id);
+    }
+
+    public List<RoleVO> listAll() {
+        return roleRepository.findAllRole();
     }
 
     public Role save(RoleDTO roleDTO) {

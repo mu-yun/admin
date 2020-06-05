@@ -3,6 +3,7 @@ package com.muyun.springboot.controller;
 import com.muyun.springboot.dto.RoleDTO;
 import com.muyun.springboot.entity.Role;
 import com.muyun.springboot.service.RoleService;
+import com.muyun.springboot.vo.RoleVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,6 +36,11 @@ public class RoleController {
     @GetMapping("/{id}/menus")
     public Set<Long> getMenus(@PathVariable Long id) {
         return roleService.getMenus(id);
+    }
+
+    @GetMapping("/all")
+    public List<RoleVO> listAll() {
+        return roleService.listAll();
     }
 
     @GetMapping
