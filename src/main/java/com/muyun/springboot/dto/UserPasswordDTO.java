@@ -8,10 +8,10 @@ import javax.validation.constraints.Size;
 
 /**
  * @author muyun
- * @date 2020/4/22
+ * @date 2020/6/6
  */
 @Data
-public class UserDTO extends UserInfoDTO {
+public class UserPasswordDTO {
 
     @NotNull(message = "Password is required")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Password must be alphanumeric")

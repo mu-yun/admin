@@ -8,6 +8,9 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import java.util.Set;
 
 /**
  * @author muyun
@@ -19,7 +22,7 @@ import javax.persistence.Entity;
 @Where(clause = BaseEntity.WHERE_CLAUSE)
 public class User extends BaseEntity {
 
-    @Column(unique = true, nullable = false, updatable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @JsonIgnore
@@ -29,5 +32,8 @@ public class User extends BaseEntity {
     private String name;
 
     private String phoneNumber;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 
 }
