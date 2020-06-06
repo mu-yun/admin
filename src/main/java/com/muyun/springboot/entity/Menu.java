@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.muyun.springboot.jpa.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 import org.springframework.http.HttpMethod;
@@ -14,7 +15,6 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -57,8 +57,9 @@ public class Menu extends BaseEntity implements GrantedAuthority {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "menus")
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude  //avoid infinite loop
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @Override
     public String getAuthority() {

@@ -20,7 +20,7 @@ public interface MenuMapper {
 
     Menu idToMenu(Long id);
 
-    Set<Menu> idsToMenu(Set<Long> ids);
+    Set<Menu> idsToMenus(Set<Long> ids);
 
     Menu toMenu(MenuDTO menuDTO);
 
