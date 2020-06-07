@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")//TODO forbid update admin
-    public User updatePassword(@PathVariable Long id, @RequestBody UserPasswordDTO userPasswordDTO) {
+    public User updatePassword(@PathVariable Long id, @RequestBody @Valid UserPasswordDTO userPasswordDTO) {
         return userService.updatePassword(id, userPasswordDTO.getPassword());
     }
 
