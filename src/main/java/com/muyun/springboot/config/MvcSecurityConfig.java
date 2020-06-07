@@ -1,17 +1,17 @@
 package com.muyun.springboot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.muyun.springboot.common.Response;
+import com.muyun.springboot.common.ResponseData;
+import com.muyun.springboot.common.ResponseStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -21,8 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -30,22 +28,18 @@ import java.io.IOException;
  * @author muyun
  * @date 2020/4/26
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper objectMapper;
 
-    public MvcSecurityConfig(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
-                .antMatchers("/ping")
-                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -73,62 +67,43 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new AuthenticationSuccessHandler() {
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                String token = request.getSession().getId();
-                setResponse(response, objectMapper.writeValueAsString(Response.success(token)));
-            }
+        return (request, response, authentication) -> {
+            String token = request.getSession().getId();
+            setResponse(response, ResponseData.success(token));
         };
 
     }
 
     public AuthenticationFailureHandler authenticationFailureHandler() {
-        return new AuthenticationFailureHandler() {
-            @Override
-            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                                AuthenticationException exception) throws IOException, ServletException {
-                setResponse(response, objectMapper.writeValueAsString(Response.error(exception.getMessage())));
-            }
+        return (request, response, exception) -> {
+            setResponse(response, ResponseData.of(ResponseStatus.AUTHENTICATION_FAIL));
         };
 
     }
 
     public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new AuthenticationEntryPoint() {
-            @Override
-            public void commence(HttpServletRequest request, HttpServletResponse response,
-                                 AuthenticationException authException) throws IOException, ServletException {
-                setResponse(response, objectMapper.writeValueAsString(Response.error("请登录")));
-            }
+        return (request, response, authException) -> {
+            setResponse(response, ResponseData.of(ResponseStatus.UNAUTHORIZED));
         };
 
     }
 
     public AccessDeniedHandler accessDeniedHandler() {
-        return new AccessDeniedHandler() {
-            @Override
-            public void handle(HttpServletRequest request, HttpServletResponse response,
-                               AccessDeniedException accessDeniedException) throws IOException, ServletException {
-                setResponse(response, objectMapper.writeValueAsString(Response.error("无权限")));
-            }
+        return (request, response, accessDeniedException) -> {
+            log.error("", accessDeniedException);
+            setResponse(response, ResponseData.of(ResponseStatus.FORBIDDEN));
         };
     }
 
 
     public LogoutSuccessHandler logoutSuccessHandler() {
-        return new LogoutSuccessHandler() {
-            @Override
-            public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                setResponse(response, objectMapper.writeValueAsString(Response.success(null)));
-            }
-        };
+        return (request, response, authentication) -> setResponse(response, ResponseData.success());
     }
 
-    private <T> void setResponse(HttpServletResponse response, String responseBody) throws IOException {
+    private <T> void setResponse(HttpServletResponse response, ResponseData<T> responseData) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().print(responseBody);
+        response.getWriter().print(objectMapper.writeValueAsString(responseData));
     }
 }

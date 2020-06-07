@@ -1,6 +1,7 @@
 package com.muyun.springboot.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,19 +22,18 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Response<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseData<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<String> messages = e.getBindingResult().getAllErrors().stream()
-                .map(error -> error.getDefaultMessage()).collect(Collectors.toList());
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
 
-        log.error("请求参数校验失败:{}", messages);
-        return Response.error(messages);
+        log.error("MethodArgumentNotValid:{}", messages, e);
+        return ResponseData.of(ResponseStatus.VALIDATION_ERROR, messages);
     }
 
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public Response<String> handleThrowable(NoHandlerFoundException e) {
-        log.error("", e);
-        return Response.error(e.getMessage());
+    public ResponseData<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
+        return response(ResponseStatus.NOT_FOUND, e);
     }
 
     /**
@@ -43,15 +43,18 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public Response<String> handleException(AccessDeniedException e) {
-        log.error("", e);
-        return Response.error(e.getMessage());
+    public ResponseData<String> handleAccessDeniedException(AccessDeniedException e) {
+        return response(ResponseStatus.FORBIDDEN, e);
     }
 
     @ExceptionHandler(Exception.class)
-    public Response<String> handleException(Exception e) {
+    public ResponseData<String> handleException(Exception e) {
+        return response(ResponseStatus.INTERNAL_ERROR, e);
+    }
+
+    private ResponseData<String> response(ResponseStatus status, Exception e) {
         log.error("", e);
-        return Response.error(e.getMessage());
+        return ResponseData.of(status);
     }
 
 }

@@ -27,11 +27,11 @@ public class GlobalResponseBodyHandler implements ResponseBodyAdvice<Object> {
 
         //TODO 如果方法返回类型是String,应该特殊处理
         Class<?> parameterType = returnType.getParameterType();
-        if (parameterType == String.class || parameterType == Response.class) {
+        if (parameterType == String.class || parameterType == ResponseData.class) {
             return body;
         }
 
-        return Response.success(body);
+        return ResponseData.success(body);
     }
 
 }
