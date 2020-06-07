@@ -1,6 +1,8 @@
 package com.muyun.springboot.controller;
 
 import com.muyun.springboot.criteria.UserCriteria;
+import com.muyun.springboot.dto.UserChangeInfoDTO;
+import com.muyun.springboot.dto.UserChangePasswordDTO;
 import com.muyun.springboot.dto.UserDTO;
 import com.muyun.springboot.dto.UserDetail;
 import com.muyun.springboot.dto.UserInfoDTO;
@@ -39,6 +41,16 @@ public class UserController {
     @GetMapping("/detail")
     public UserDetail getDetail() {
         return UserUtil.getCurrentUserDetail();
+    }
+
+    @PutMapping
+    public void changeInfo(@RequestBody @Valid UserChangeInfoDTO userChangeInfoDTO) {
+        userService.changeInfo(userChangeInfoDTO);
+    }
+
+    @PutMapping("/password")
+    public void changePassword(@RequestBody @Valid UserChangePasswordDTO userChangePasswordDTO) {
+        userService.changePassword(userChangePasswordDTO);
     }
 
     @GetMapping

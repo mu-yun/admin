@@ -12,17 +12,13 @@ import java.util.Set;
  * @date 2020/6/3
  */
 @Data
-public class UserInfoDTO {
+public class UserInfoDTO extends UserChangeInfoDTO {
 
     @NotNull(message = "Username is required")
     @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]*$", message = "Username must be alphanumeric and start with a letter")
     @Size(min = 5, max = 16, message = "Username length must be between 5 and 16")
     private String username;
 
-    private String name;
-
-    @Pattern(regexp = "^1[0-9]{10}$", message = "Incorrect phone number")
-    private String phoneNumber;
 
     private Set<Long> roles;
 }

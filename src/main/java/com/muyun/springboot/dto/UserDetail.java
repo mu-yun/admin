@@ -21,17 +21,19 @@ public class UserDetail implements UserDetails {
 
     private final Long id;
 
-    private final String username;
+    private String username;
 
     @JsonIgnore
-    private final String password;
+    private String password;
 
-    private final String name;
+    private String name;
 
-    private final Set<? extends GrantedAuthority> authorities;
+    private String phoneNumber;
+
+    private Set<? extends GrantedAuthority> authorities;
 
     public static UserDetail fromUser(User user) {
-        return Objects.isNull(user) ? null : new UserDetail(user.getId(), user.getUsername(), user.getPassword(), user.getName(), null);
+        return Objects.isNull(user) ? null : new UserDetail(user.getId(), user.getUsername(), user.getPassword(), user.getName(), null, null);
     }
 
     @Override
