@@ -36,6 +36,8 @@ public class UserService implements UserDetailsService {
 
     private static final Long ADMIN_ID = 1L;
 
+    private static final UsernameNotFoundException USERNAME_NOT_FOUND_EXCEPTION = new UsernameNotFoundException("Username not found");
+
     private static final ExampleMatcher MATCHER = ExampleMatcher.matching()
             .withMatcher("name", match -> match.contains().ignoreCase())
             .withMatcher("username", matcher -> matcher.contains().ignoreCase());
@@ -131,7 +133,7 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUsername(username);
 
         if (Objects.isNull(user)) {
-            throw new UsernameNotFoundException("用户名不存在");
+            throw USERNAME_NOT_FOUND_EXCEPTION;
         }
         return UserDetail.fromUser(user);
     }
