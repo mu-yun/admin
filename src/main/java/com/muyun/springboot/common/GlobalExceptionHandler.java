@@ -1,5 +1,6 @@
 package com.muyun.springboot.common;
 
+import com.muyun.springboot.exception.ArgumentNotValidException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
         return ResponseData.of(ResponseStatus.VALIDATION_ERROR, messages);
     }
 
+    @ExceptionHandler(ArgumentNotValidException.class)
+    public ResponseData<List<String>> handleArgumentNotValidException(ArgumentNotValidException e) {
+        List<String> messages = e.getMessages();
+        log.error("ArgumentNotValid:{}", messages, e);
+        return ResponseData.of(ResponseStatus.VALIDATION_ERROR, messages);
+    }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseData<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
