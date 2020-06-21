@@ -3,8 +3,11 @@ package com.muyun.springboot.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muyun.springboot.common.ResponseData;
 import com.muyun.springboot.common.ResponseStatus;
+import com.muyun.springboot.entity.Menu;
+import com.muyun.springboot.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -23,6 +27,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author muyun
@@ -35,14 +40,26 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final MenuRepository menuRepository;
+
     private final ObjectMapper objectMapper;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authenticationConfigurer = http.authorizeRequests();
+
+        List<Menu> menus = menuRepository.findAll();
+        menus.forEach(menu -> {
+            if (menu.getType() != Menu.MenuType.CATALOG && Strings.isNotEmpty(menu.getAuthority())) {
+                authenticationConfigurer.antMatchers(menu.getHttpMethod(), menu.getUrl()).hasAuthority(menu.getAuthority());
+            }
+        });
+
+        authenticationConfigurer
                 .anyRequest()
                 .authenticated()
                 .and()
+                .csrf().disable()
                 .formLogin()
                 .permitAll()
                 .successHandler(authenticationSuccessHandler())
