@@ -39,7 +39,7 @@ public class ValidatorService {
     }
 
     public <T> void validateValue(Class<T> beanType, String propertyName, Object value, Class<?>... groups) {
-        verify(validator.validateValue(beanType,propertyName,value,groups));
+        verify(validator.validateValue(beanType, propertyName, value, groups));
     }
 
     public BeanDescriptor getConstraintsForClass(Class<?> clazz) {
