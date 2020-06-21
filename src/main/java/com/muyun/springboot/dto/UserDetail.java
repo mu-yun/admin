@@ -3,52 +3,46 @@ package com.muyun.springboot.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.muyun.springboot.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 /**
  * @author muyun
  * @date 2020/4/27
  */
-@Data
+@Getter
 @AllArgsConstructor
 public class UserDetail implements UserDetails {
 
-    private final Long id;
-
-    private String username;
-
-    @JsonIgnore
-    private String password;
-
-    private String name;
-
-    private String phoneNumber;
+    private final User user;
 
     private Set<? extends GrantedAuthority> authorities;
 
-    public static UserDetail fromUser(User user) {
-        return Objects.isNull(user) ? null : new UserDetail(user.getId(), user.getUsername(), user.getPassword(), user.getName(), null, null);
+    public static UserDetail of(User user, Set<? extends GrantedAuthority> authorities) {
+        return new UserDetail(user, authorities);
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @JsonIgnore
@@ -72,6 +66,6 @@ public class UserDetail implements UserDetails {
     @JsonIgnore
     @Override
     public boolean isEnabled() {
-        return true;
+        return !user.getDeleted();
     }
 }

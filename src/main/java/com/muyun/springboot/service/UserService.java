@@ -1,12 +1,17 @@
 package com.muyun.springboot.service;
 
+import com.google.common.collect.Sets;
 import com.muyun.springboot.dto.UserChangeInfoDTO;
 import com.muyun.springboot.dto.UserChangePasswordDTO;
 import com.muyun.springboot.dto.UserDTO;
 import com.muyun.springboot.dto.UserDetail;
 import com.muyun.springboot.dto.UserInfoDTO;
+import com.muyun.springboot.entity.Menu;
+import com.muyun.springboot.entity.Role;
 import com.muyun.springboot.entity.User;
 import com.muyun.springboot.mapper.UserMapper;
+import com.muyun.springboot.repository.MenuRepository;
+import com.muyun.springboot.repository.RoleRepository;
 import com.muyun.springboot.repository.UserRepository;
 import com.muyun.springboot.util.UserUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author muyun
@@ -46,6 +53,10 @@ public class UserService implements UserDetailsService {
             -> criteriaBuilder.greaterThan(root.get("id"), ADMIN_ID);
 
     private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final MenuRepository menuRepository;
 
     private final UserMapper userMapper;
 
@@ -76,30 +87,32 @@ public class UserService implements UserDetailsService {
 
     public User save(UserDTO userDTO) {
         User user = userMapper.toUser(userDTO, passwordEncoder.encode(userDTO.getPassword()));
-        return userRepository.save(user);
+        userRepository.save(user);
+        user.setRoles(roleRepository.findAllById(userDTO.getRoles()).stream().collect(Collectors.toSet()));
+        return user;
     }
 
     public void changeInfo(UserChangeInfoDTO userChangeInfoDTO) {
-        UserDetail userDetail = UserUtil.getCurrentUserDetail();
+        User currentUser = UserUtil.getCurrentUser();
 
-        update(userDetail.getId(), user -> {
+        update(currentUser.getId(), user -> {
             userMapper.updateUser(user, userChangeInfoDTO);
             userRepository.save(user);
-            userMapper.updateUserDetail(userDetail, userChangeInfoDTO);
+            userMapper.updateUser(currentUser, user);
             return user;
         });
     }
 
     public void changePassword(UserChangePasswordDTO userChangePasswordDTO) {
-        UserDetail userDetail = UserUtil.getCurrentUserDetail();
+        User currentUser = UserUtil.getCurrentUser();
 
-        update(userDetail.getId(), user -> {
+        update(currentUser.getId(), user -> {
             if (!passwordEncoder.matches(userChangePasswordDTO.getOldPassword(), user.getPassword())) {
                 throw new RuntimeException("Old password is wrong");
             }
             user.setPassword(passwordEncoder.encode(userChangePasswordDTO.getNewPassword()));
             userRepository.save(user);
-            userDetail.setPassword(user.getPassword());
+            currentUser.setPassword(user.getPassword());
             return user;
         });
     }
@@ -129,13 +142,23 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
 
         if (Objects.isNull(user)) {
             throw USERNAME_NOT_FOUND_EXCEPTION;
         }
-        return UserDetail.fromUser(user);
+        Set<Menu> authorities;
+        if (user.getId().equals(ADMIN_ID)) {
+            authorities = Sets.newHashSet(menuRepository.findAll());
+        } else {
+            authorities = user.getRoles().stream()
+                    .map(Role::getMenus)
+                    .flatMap(Set::stream).collect(Collectors.toSet());
+        }
+
+        return UserDetail.of(user, authorities);
     }
 
 }

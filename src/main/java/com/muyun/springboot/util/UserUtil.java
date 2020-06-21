@@ -1,6 +1,7 @@
 package com.muyun.springboot.util;
 
 import com.muyun.springboot.dto.UserDetail;
+import com.muyun.springboot.entity.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -15,5 +16,9 @@ public final class UserUtil {
 
     public static UserDetail getCurrentUserDetail() {
         return (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public static User getCurrentUser() {
+        return getCurrentUserDetail().getUser();
     }
 }

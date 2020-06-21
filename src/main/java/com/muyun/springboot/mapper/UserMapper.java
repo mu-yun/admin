@@ -2,7 +2,6 @@ package com.muyun.springboot.mapper;
 
 import com.muyun.springboot.dto.UserChangeInfoDTO;
 import com.muyun.springboot.dto.UserDTO;
-import com.muyun.springboot.dto.UserDetail;
 import com.muyun.springboot.dto.UserInfoDTO;
 import com.muyun.springboot.entity.User;
 import org.mapstruct.Mapper;
@@ -23,6 +22,6 @@ public interface UserMapper {
 
     void updateUser(@MappingTarget User user, UserChangeInfoDTO userBasicDTO);
 
-    void updateUserDetail(@MappingTarget UserDetail userDetail, UserChangeInfoDTO userBasicDTO);
+    void updateUser(@MappingTarget User userTarget, User userSource);
 
 }
