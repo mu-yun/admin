@@ -17,7 +17,7 @@ public enum ResponseStatus {
     UNAUTHORIZED(4002, "Please login"),
     FORBIDDEN(4003, "No permission"),
     NOT_FOUND(4004, "Request not found, please contact the administrator"),
-    INTERNAL_ERROR(5000, "Internal server error,please contact the administrator");
+    INTERNAL_ERROR(5000, "Internal server error, please contact the administrator");
 
     private final int code;
 
