@@ -4,9 +4,14 @@ import com.muyun.springboot.dto.UserChangeInfoDTO;
 import com.muyun.springboot.dto.UserDTO;
 import com.muyun.springboot.dto.UserInfoDTO;
 import com.muyun.springboot.entity.User;
+import com.muyun.springboot.model.Route;
+import com.muyun.springboot.model.UserDetailInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author muyun
@@ -23,5 +28,7 @@ public interface UserMapper {
     void updateUser(@MappingTarget User user, UserChangeInfoDTO userBasicDTO);
 
     void updateUser(@MappingTarget User userTarget, User userSource);
+
+    UserDetailInfo toUserDetailInfo(User user, List<Route> routes, Set<String> authorities);
 
 }

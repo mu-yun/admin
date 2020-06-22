@@ -1,5 +1,7 @@
 package com.muyun.springboot.service;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.muyun.springboot.dto.UserChangeInfoDTO;
 import com.muyun.springboot.dto.UserChangePasswordDTO;
@@ -9,12 +11,16 @@ import com.muyun.springboot.dto.UserInfoDTO;
 import com.muyun.springboot.entity.Menu;
 import com.muyun.springboot.entity.Role;
 import com.muyun.springboot.entity.User;
+import com.muyun.springboot.mapper.MenuMapper;
 import com.muyun.springboot.mapper.UserMapper;
+import com.muyun.springboot.model.Route;
+import com.muyun.springboot.model.UserDetailInfo;
 import com.muyun.springboot.repository.MenuRepository;
 import com.muyun.springboot.repository.RoleRepository;
 import com.muyun.springboot.repository.UserRepository;
 import com.muyun.springboot.util.UserUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -28,6 +34,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -60,6 +70,8 @@ public class UserService implements UserDetailsService {
 
     private final UserMapper userMapper;
 
+    private final MenuMapper menuMapper;
+
     private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
@@ -75,6 +87,51 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public UserDetailInfo getUserDetailInfo() {
+        UserDetail userDetail = UserUtil.getCurrentUserDetail();
+        Set<Menu> menus = (Set<Menu>) userDetail.getAuthorities();
+        Set<String> authorities = Collections.emptySet();
+        List<Route> routes = Collections.emptyList();
+        if (menus != null && !menus.isEmpty()) {
+            Map<Long, List<Menu>> parentToChildren = Maps.newHashMap();
+            authorities = Sets.newHashSetWithExpectedSize(menus.size());
+            final Set<String> finalAuthorities = authorities;
+            menus.forEach(menu -> {
+                if (menu.getType() != Menu.MenuType.BUTTON) {
+                    Long parentId = menu.getParentId() == null ? 0L : menu.getParentId();
+                    List<Menu> children = parentToChildren.get(parentId);
+                    if (children == null) {
+                        children = Lists.newArrayList();
+                        parentToChildren.put(parentId, children);
+                    }
+                    children.add(menu);
+                }
+                if (Strings.isNotEmpty(menu.getAuthority())) {
+                    finalAuthorities.add(menu.getAuthority());
+                }
+            });
+            List<Menu> catalogs = parentToChildren.get(0L);
+            if (catalogs != null) {
+                routes = getRoutes(catalogs, parentToChildren);
+            }
+        }
+
+        return userMapper.toUserDetailInfo(userDetail.getUser(), routes, authorities);
+    }
+
+    public List<Route> getRoutes(List<Menu> menus, Map<Long, List<Menu>> parentToChildren) {
+        return menus.stream()
+                .sorted(Comparator.comparingLong(Menu::getSequenceNumber).thenComparingLong(Menu::getId))
+                .map(menu -> {
+                    List<Route> children = null;
+                    List<Menu> menuChildren = parentToChildren.get(menu.getId());
+                    if (menuChildren != null) {
+                        children = getRoutes(menuChildren, parentToChildren);
+                    }
+                    return menuMapper.toRoute(menu, children);
+                })
+                .collect(Collectors.toList());
+    }
 
     public Page<User> list(Specification<User> spec, Pageable pageable) {
         return userRepository.findAll(ID_SPEC.and(spec), pageable);
