@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muyun.springboot.common.ResponseData;
 import com.muyun.springboot.common.ResponseStatus;
 import com.muyun.springboot.entity.Menu;
+import com.muyun.springboot.model.UserDetailInfo;
+import com.muyun.springboot.model.UserLoginInfo;
 import com.muyun.springboot.repository.MenuRepository;
+import com.muyun.springboot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -39,6 +43,9 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserService userService;
 
     private final MenuRepository menuRepository;
 
@@ -86,7 +93,8 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
             String token = request.getSession().getId();
-            setResponse(response, ResponseData.success(token));
+            UserDetailInfo userDetailInfo = userService.getUserDetailInfo();
+            setResponse(response, ResponseData.success(UserLoginInfo.of(token, userDetailInfo)));
         };
 
     }
