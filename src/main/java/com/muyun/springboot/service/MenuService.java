@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache;
 import com.muyun.springboot.dto.MenuDTO;
 import com.muyun.springboot.entity.Menu;
 import com.muyun.springboot.mapper.MenuMapper;
-import com.muyun.springboot.repository.MenuRepository;
+import com.muyun.springboot.repository.base.MenuRepository;
 import com.muyun.springboot.vo.MenuTreeVO;
 import com.muyun.springboot.vo.MenuVO;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +36,10 @@ public class MenuService {
     private final MenuRepository menuRepository;
 
     private final MenuMapper menuMapper;
+
+    public List<Menu> findAll() {
+        return menuRepository.findAll();
+    }
 
     public List<MenuTreeVO> listTree(Long parentId) {
         return menuRepository.findByParentId(parentId)

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.muyun.springboot.mybatis.LogMapper">
+    <resultMap id="BaseResult" type="com.muyun.springboot.vo.LogVO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="created_by" jdbcType="BIGINT" property="createdBy"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="operation" jdbcType="VARCHAR" property="operation"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+
+    <sql id="Where_Condition">
+        <where>
+            <if test="logCriteria.startDate != null">
+                and log.created_date &gt;= #{logCriteria.startDate}
+            </if>
+            <if test="logCriteria.endDate != null">
+                and log.created_date &lt; #{logCriteria.endDate}
+            </if>
+            <if test="logCriteria.operation != null">
+                <bind name="operation" value="'%' + logCriteria.operation + '%'"/>
+                and log.operation like #{operation}
+            </if>
+            <if test="logCriteria.keyword != null and logCriteria.type != null">
+                <bind name="keyword" value="'%' + logCriteria.keyword + '%'"/>
+                <choose>
+                    <when test="logCriteria.type == @com.muyun.springboot.criteria.UserCriteria$UserSearchType@USERNAME">
+                        and user.username like #{keyword}
+                    </when>
+                    <otherwise>
+                        and user.name like #{keyword}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <select id="findAll" resultMap="BaseResult">
+        select log.id,
+               log.created_by,
+               log.created_date,
+               log.operation,
+               user.username,
+               user.name
+        from log log
+                     inner join user user on log.created_by = user.id
+        <include refid="Where_Condition"/>
+        order by
+        <foreach collection="pageable.sort" item="order" separator=",">
+            ${order.property} ${order.direction.name}
+        </foreach>
+        limit #{pageable.pageSize} offset #{pageable.offset}
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        select count(*)
+        from log log
+                     inner join user user on log.created_by = user.id
+        <include refid="Where_Condition"/>
+    </select>
+</mapper>

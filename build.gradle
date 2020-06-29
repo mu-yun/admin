@@ -24,6 +24,7 @@ configurations {
 
 ext {
     mapstructVersion = '1.3.1.Final'
+    mybatisVersion = '2.1.3'
 }
 
 repositories {
@@ -35,6 +36,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     //connect mysql
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisVersion}"
+
     runtimeOnly 'mysql:mysql-connector-java'
     //jpa and hibernate conflict
     compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'

@@ -1,4 +1,4 @@
-package com.muyun.springboot.repository;
+package com.muyun.springboot.repository.base;
 
 import com.muyun.springboot.dto.MenuTreeDTO;
 import com.muyun.springboot.entity.Menu;

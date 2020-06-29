@@ -23,8 +23,13 @@ spring:
   #404 抛异常
   mvc:
     throw-exception-if-no-handler-found: true
+    date-format: yyyy-MM-dd HH:mm:ss
+
   resources:
     add-mappings: false
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
 
 server:
   servlet:
@@ -33,14 +38,16 @@ server:
         #客户端可以获取cookie
         http-only: false
 
-
 logging:
   level:
     # log request info
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
-
-
+    com.muyun.springboot.mybatis.LogMapper: DEBUG
 
 #  devtools:
 #    restart:
 #      additional-exclude:
+
+
+
+

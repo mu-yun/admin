@@ -3,7 +3,7 @@ package com.muyun.springboot.service;
 import com.muyun.springboot.dto.RoleDTO;
 import com.muyun.springboot.entity.Role;
 import com.muyun.springboot.mapper.RoleMapper;
-import com.muyun.springboot.repository.RoleRepository;
+import com.muyun.springboot.repository.base.RoleRepository;
 import com.muyun.springboot.vo.RoleVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
