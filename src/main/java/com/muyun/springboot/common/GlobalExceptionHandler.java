@@ -1,6 +1,7 @@
 package com.muyun.springboot.common;
 
 import com.muyun.springboot.exception.ArgumentNotValidException;
+import com.muyun.springboot.exception.DataNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,9 +39,14 @@ public class GlobalExceptionHandler {
         return ResponseData.of(ResponseStatus.VALIDATION_ERROR, messages);
     }
 
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseData<String> handleDataNotFoundException(DataNotFoundException e) {
+        return response(ResponseStatus.DATA_NOT_FOUND, e);
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseData<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
-        return response(ResponseStatus.NOT_FOUND, e);
+        return response(ResponseStatus.REQUEST_NOT_FOUND, e);
     }
 
     /**

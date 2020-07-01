@@ -11,6 +11,8 @@ import com.muyun.springboot.dto.UserInfoDTO;
 import com.muyun.springboot.entity.Menu;
 import com.muyun.springboot.entity.Role;
 import com.muyun.springboot.entity.User;
+import com.muyun.springboot.exception.ArgumentNotValidException;
+import com.muyun.springboot.exception.DataNotFoundException;
 import com.muyun.springboot.mapper.MenuMapper;
 import com.muyun.springboot.mapper.UserMapper;
 import com.muyun.springboot.model.Route;
@@ -165,7 +167,7 @@ public class UserService implements UserDetailsService {
 
         update(currentUser.getId(), user -> {
             if (!passwordEncoder.matches(userChangePasswordDTO.getOldPassword(), user.getPassword())) {
-                throw new RuntimeException("Old password is wrong");
+                throw new ArgumentNotValidException(Collections.singletonList("Old password is wrong"));
             }
             user.setPassword(passwordEncoder.encode(userChangePasswordDTO.getNewPassword()));
             userRepository.save(user);
@@ -191,7 +193,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     User update(Long id, Function<User, User> mapper) {
         return userRepository.findById(id)
-                .map(mapper).orElseThrow(() -> new RuntimeException("修改的用户不存在"));
+                .map(mapper).orElseThrow(() -> DataNotFoundException.DATA_NOT_FOUND_EXCEPTION);
     }
 
     public void delete(Long id) {

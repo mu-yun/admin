@@ -2,6 +2,7 @@ package com.muyun.springboot.service;
 
 import com.muyun.springboot.dto.RoleDTO;
 import com.muyun.springboot.entity.Role;
+import com.muyun.springboot.exception.DataNotFoundException;
 import com.muyun.springboot.mapper.RoleMapper;
 import com.muyun.springboot.repository.base.RoleRepository;
 import com.muyun.springboot.vo.RoleVO;
@@ -57,7 +58,7 @@ public class RoleService {
                     roleMapper.updateRole(role, roleDTO);
                     return roleRepository.save(role);
                 })
-                .orElseThrow(() -> new RuntimeException("修改的角色不存在"));
+                .orElseThrow(() -> DataNotFoundException.DATA_NOT_FOUND_EXCEPTION);
     }
 
     public void delete(Long id) {

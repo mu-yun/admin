@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.muyun.springboot.dto.MenuDTO;
 import com.muyun.springboot.entity.Menu;
+import com.muyun.springboot.exception.DataNotFoundException;
 import com.muyun.springboot.mapper.MenuMapper;
 import com.muyun.springboot.repository.base.MenuRepository;
 import com.muyun.springboot.vo.MenuTreeVO;
@@ -78,13 +79,14 @@ public class MenuService {
                     }
                     return menuMapper.toMenuVO(menu, MENU_HAS_CHILDREN_CACHE.getUnchecked(id));
                 })
-                .orElseThrow(() -> new RuntimeException("修改的菜单不存在"));
+                .orElseThrow(() -> DataNotFoundException.DATA_NOT_FOUND_EXCEPTION);
     }
 
     @Transactional
     public void delete(Long id) {
         menuRepository.findById(id)
                 .map(menu -> {
+                    //TODO delete children?
                     menuRepository.delete(menu);
                     menuRepository.deleteAllByParentId(id);
 
@@ -92,7 +94,7 @@ public class MenuService {
                     invalidateCache(menu.getId());
                     return menu;
                 })
-                .orElseThrow(() -> new RuntimeException("删除的菜单不存在"));
+                .orElseThrow(() -> DataNotFoundException.DATA_NOT_FOUND_EXCEPTION);
     }
 
     private void invalidateCache(Long id) {
