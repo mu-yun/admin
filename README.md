@@ -1,2 +1,2 @@
-# Spring Boot 
-Spring Boot Demo
+# Admin
+Admin management system based on Spring Boot
